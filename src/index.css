@@ -104,7 +104,7 @@ body {
 .navbar {
   width: 100%;
   max-width: 48rem;
-  background: rgba(31, 111, 67, 0.32);
+  background: rgba(255, 255, 255, 0.105);
   backdrop-filter: blur(4px);
   border-radius: var(--radius-full);
   padding: 0.5rem 2rem;
@@ -316,4 +316,48 @@ body {
 
 .hero-btn:hover .arrow {
   transform: translateX(5px);
+}
+
+/* === Audio Toggle === */
+
+.audio-toggle {
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-full);
+  color: white;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.audio-toggle:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.audio-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 16px;
+}
+
+.audio-bar {
+  display: block;
+  width: 3px;
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transform-origin: bottom;
+  transform: scaleY(0.2);
 }
