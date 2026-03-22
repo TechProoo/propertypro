@@ -10,7 +10,8 @@ export default function App() {
         autoPlay
         muted
         loop
-        className="fixed top-0 left-0 w-full h-full object-cover -z-10"
+        playsInline
+        className="fixed top-0 left-0 w-full h-full object-cover -z-10 pointer-events-none"
       >
         <source src="/img/127983 (Original).mp4" type="video/mp4" />
       </video>
@@ -19,7 +20,7 @@ export default function App() {
       <div className="fixed inset-0 bg-primary-dark/50 -z-5"></div>
 
       {/* Content */}
-      <div className="relative text-white min-h-screen">
+      <div className="relative text-white h-screen overflow-hidden">
         <Navbar />
         <Hero />
       </div>
