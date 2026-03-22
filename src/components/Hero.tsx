@@ -8,7 +8,12 @@ export default function Hero() {
   useEffect(() => {
     if (!typedRef.current) return;
     const typed = new Typed(typedRef.current, {
-      strings: ["OUR PASSION", "OUR EXPERIENCE", "BEAUTIFUL"],
+      strings: [
+        "WITH PROPERTYLOOP",
+        "GET VICINITY",
+        "GET CONNECTIONS",
+        "PLACEMENTS",
+      ],
       typeSpeed: 150,
       backSpeed: 150,
       loop: true,
@@ -18,7 +23,7 @@ export default function Hero() {
 
   return (
     <div className="">
-      <div className="flex justify-center md:mt-30 mt-30 p-5 md:p-0">
+      <div className="flex justify-center md:mt-35 mt-30 p-5 md:p-0">
         <div className="text-left max-w-5xl">
           <small className="prp_des text-[clamp(13px,2vw,16px)]">
             PropertyLoop is a tech-powered real estate network where agents and

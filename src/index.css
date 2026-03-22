@@ -2,7 +2,7 @@
 
 :root {
   /* Brand */
-  --color-primary: #1f6f43;
+  --color-primary: #2f9e61;
   --color-primary-dark: #1a3d2a;
   --color-primary-light: #2d5a3f;
   --color-primary-muted: #4a7a5c;
@@ -73,7 +73,6 @@
   --color-glow-strong: rgba(31, 111, 67, 0.5);
 }
 
-
 html,
 body {
   margin: 0;
@@ -105,7 +104,7 @@ body {
 .navbar {
   width: 100%;
   max-width: 48rem;
-  background: rgba(31, 111, 67, 0.15);
+  background: rgba(31, 111, 67, 0.32);
   backdrop-filter: blur(4px);
   border-radius: var(--radius-full);
   padding: 0.5rem 2rem;
@@ -237,7 +236,9 @@ body {
   text-decoration: none;
   padding: 0.5rem 0;
   display: block;
-  transition: color var(--transition-fast), background var(--transition-fast);
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast);
 }
 
 .navbar-link:hover {
@@ -262,7 +263,7 @@ body {
 }
 
 .prp_des {
-  color: rgba(246, 207, 157, 0.486);
+  color: rgb(238, 196, 141);
 }
 
 .hero-description {
@@ -296,7 +297,10 @@ body {
   border: 1px solid rgba(31, 111, 67, 0.3);
   border-radius: var(--radius-full);
   cursor: pointer;
-  transition: background var(--transition-base), box-shadow var(--transition-base), transform var(--transition-fast);
+  transition:
+    background var(--transition-base),
+    box-shadow var(--transition-base),
+    transform var(--transition-fast);
 }
 
 .hero-btn:hover {
