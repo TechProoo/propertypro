@@ -2,9 +2,7 @@ import { FacebookIcon, MessageCircle, InstagramIcon, Mail } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 const icons: { Icon: LucideIcon; label: string }[] = [
-  { Icon: FacebookIcon, label: "Facebook" },
   { Icon: MessageCircle, label: "WhatsApp" },
-  { Icon: InstagramIcon, label: "Instagram" },
   { Icon: Mail, label: "Email" },
 ];
 
