@@ -18,10 +18,7 @@ export default function Hero() {
 
   return (
     <div className="">
-      <div
-        className="flex justify-center md:mt-30 mt-30 p-5 md:p-0"
-        // style={{ marginTop: "clamp(40px, 10vw, 100px)" }}
-      >
+      <div className="flex justify-center md:mt-30 mt-30 p-5 md:p-0">
         <div className="text-left max-w-5xl">
           <small className="prp_des text-[clamp(13px,2vw,16px)]">
             PropertyLoop is a tech-powered real estate network where agents and
