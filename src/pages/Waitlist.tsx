@@ -1,12 +1,14 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Navbar from "../components/waitlist/Navbar";
 import Hero from "../components/waitlist/Hero";
 import SocialIcons from "../components/waitlist/SocialIcons";
 import AudioToggle from "../components/waitlist/AudioToggle";
+import Preloader from "../components/waitlist/Preloader";
 import bgAudio from "../assets/4935e98a-7b02-44b0-a360-47b204b36cfa.m4a";
 
 export default function Waitlist() {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [preloaderDone, setPreloaderDone] = useState(false);
 
   useEffect(() => {
     const audio = audioRef.current;
