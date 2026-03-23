@@ -28,7 +28,7 @@ export default function Waitlist() {
   }, []);
 
   return (
-    <div className="relative h-screen overflow-hidden">
+    <div className="">
       {/* Background Audio */}
       <audio ref={audioRef} src={bgAudio} loop />
 
