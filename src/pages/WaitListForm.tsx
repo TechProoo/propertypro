@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type FormEvent } from "react";
 import gsap from "gsap";
 import Logo from "../assets/logo.png";
 import { icons } from "../components/waitlist/SocialIcons";
@@ -10,72 +10,53 @@ const tabs = [
   "Partner / Investor",
 ];
 
+const tabEmails: Record<number, string> = {
+  0: "agent@propertyloop.ng",
+  1: "builder@propertyloop.ng",
+  2: "supplier@propertyloop.ng",
+  3: "service@propertyloop.ng",
+};
+
 const tabFields: Record<
   number,
-  { label: string; type: string; placeholder: string }[]
+  { label: string; name: string; type: string; placeholder: string }[]
 > = {
   0: [
-    { label: "First Name", type: "text", placeholder: "Enter Your First Name" },
-    { label: "Last Name", type: "text", placeholder: "Enter Your Last Name" },
-    {
-      label: "Company Name",
-      type: "text",
-      placeholder: "Enter Your Company Name",
-    },
-    { label: "Location", type: "text", placeholder: "Enter Your Location" },
-    {
-      label: "Phone Number",
-      type: "tel",
-      placeholder: "Enter Your Phone Number",
-    },
-    { label: "Email", type: "email", placeholder: "Email Address" },
+    { label: "First Name", name: "first_name", type: "text", placeholder: "Enter Your First Name" },
+    { label: "Last Name", name: "last_name", type: "text", placeholder: "Enter Your Last Name" },
+    { label: "Company Name", name: "company_name", type: "text", placeholder: "Enter Your Company Name" },
+    { label: "Location", name: "location", type: "text", placeholder: "Enter Your Location" },
+    { label: "Phone Number", name: "phone", type: "tel", placeholder: "Enter Your Phone Number" },
+    { label: "Email", name: "email", type: "email", placeholder: "Email Address" },
   ],
   1: [
-    { label: "First Name", type: "text", placeholder: "Enter Your First Name" },
-    { label: "Last Name", type: "text", placeholder: "Enter Your Last Name" },
-    {
-      label: "Phone Number",
-      type: "tel",
-      placeholder: "Enter Your Phone Number",
-    },
-    { label: "Email", type: "email", placeholder: "Email Address" },
+    { label: "First Name", name: "first_name", type: "text", placeholder: "Enter Your First Name" },
+    { label: "Last Name", name: "last_name", type: "text", placeholder: "Enter Your Last Name" },
+    { label: "Phone Number", name: "phone", type: "tel", placeholder: "Enter Your Phone Number" },
+    { label: "Email", name: "email", type: "email", placeholder: "Email Address" },
   ],
   2: [
-    { label: "First Name", type: "text", placeholder: "Enter Your First Name" },
-    { label: "Last Name", type: "text", placeholder: "Enter Your Last Name" },
-    {
-      label: "Company Name",
-      type: "text",
-      placeholder: "Enter Your Company Name",
-    },
-    { label: "Location", type: "text", placeholder: "Enter Your Location" },
-    {
-      label: "Phone Number",
-      type: "tel",
-      placeholder: "Enter Your Phone Number",
-    },
-    { label: "Email", type: "email", placeholder: "Email Address" },
+    { label: "First Name", name: "first_name", type: "text", placeholder: "Enter Your First Name" },
+    { label: "Last Name", name: "last_name", type: "text", placeholder: "Enter Your Last Name" },
+    { label: "Company Name", name: "company_name", type: "text", placeholder: "Enter Your Company Name" },
+    { label: "Location", name: "location", type: "text", placeholder: "Enter Your Location" },
+    { label: "Phone Number", name: "phone", type: "tel", placeholder: "Enter Your Phone Number" },
+    { label: "Email", name: "email", type: "email", placeholder: "Email Address" },
   ],
   3: [
-    { label: "First Name", type: "text", placeholder: "Enter Your First Name" },
-    { label: "Last Name", type: "text", placeholder: "Enter Your Last Name" },
-    {
-      label: "Company Name",
-      type: "text",
-      placeholder: "Enter Your Company Name",
-    },
-    { label: "Location", type: "text", placeholder: "Enter Your Location" },
-    {
-      label: "Phone Number",
-      type: "tel",
-      placeholder: "Enter Your Phone Number",
-    },
-    { label: "Email", type: "email", placeholder: "Email Address" },
+    { label: "First Name", name: "first_name", type: "text", placeholder: "Enter Your First Name" },
+    { label: "Last Name", name: "last_name", type: "text", placeholder: "Enter Your Last Name" },
+    { label: "Company Name", name: "company_name", type: "text", placeholder: "Enter Your Company Name" },
+    { label: "Location", name: "location", type: "text", placeholder: "Enter Your Location" },
+    { label: "Phone Number", name: "phone", type: "tel", placeholder: "Enter Your Phone Number" },
+    { label: "Email", name: "email", type: "email", placeholder: "Email Address" },
   ],
 };
 
 const WaitListForm = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState<{ success: boolean; message: string } | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
@@ -85,7 +66,6 @@ const WaitListForm = () => {
   // Page load animation
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Set initial hidden states
       gsap.set([sidebarRef.current, headerRef.current, contentRef.current], {
         opacity: 0,
       });
@@ -123,8 +103,9 @@ const WaitListForm = () => {
     return () => ctx.revert();
   }, []);
 
-  // Tab switch animation
+  // Tab switch animation + clear result
   useEffect(() => {
+    setResult(null);
     if (!formRef.current) return;
     const fields = formRef.current.querySelectorAll(".form-field");
     const btn = formRef.current.querySelector(".submit-btn");
@@ -155,6 +136,38 @@ const WaitListForm = () => {
       );
     }
   }, [activeTab]);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setResult(null);
+
+    const formData = new FormData(e.currentTarget);
+    formData.append("access_key", "b202617d-1bf3-416a-b20f-90bbe6e65e51");
+    formData.append("to_email", tabEmails[activeTab]);
+    formData.append("subject", `New Waitlist Signup - ${tabs[activeTab]}`);
+    formData.append("from_name", "PropertyLoop Waitlist");
+    formData.append("category", tabs[activeTab]);
+
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setResult({ success: true, message: "You've been added to the waitlist!" });
+        (e.target as HTMLFormElement).reset();
+      } else {
+        setResult({ success: false, message: "Something went wrong. Please try again." });
+      }
+    } catch {
+      setResult({ success: false, message: "Network error. Please try again." });
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   const fields = tabFields[activeTab];
 
@@ -226,28 +239,41 @@ const WaitListForm = () => {
               <div className="h-px bg-white/20 -mt-px"></div>
             </div>
 
-            <div
-              ref={formRef}
-              className="grid md:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8 px-2 sm:px-0"
-            >
-              {fields.map((field) => (
-                <div key={`${activeTab}-${field.label}`} className="form-field">
-                  <label className="block text-white/80 text-sm mb-2">
-                    {field.label}
-                  </label>
-                  <input
-                    type={field.type}
-                    placeholder={field.placeholder}
-                    className="w-full px-4 py-3 rounded-lg bg-white/10 text-white placeholder-white/40 border border-white/20 focus:outline-none focus:border-white/50 transition-colors"
-                  />
+            <form onSubmit={handleSubmit}>
+              <div
+                ref={formRef}
+                className="grid md:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8 px-2 sm:px-0"
+              >
+                {fields.map((field) => (
+                  <div key={`${activeTab}-${field.label}`} className="form-field">
+                    <label className="block text-white/80 text-sm mb-2">
+                      {field.label}
+                    </label>
+                    <input
+                      type={field.type}
+                      name={field.name}
+                      placeholder={field.placeholder}
+                      required
+                      className="w-full px-4 py-3 rounded-lg bg-white/10 text-white placeholder-white/40 border border-white/20 focus:outline-none focus:border-white/50 transition-colors"
+                    />
+                  </div>
+                ))}
+                <div className="md:col-span-2 mt-4 submit-btn">
+                  <button
+                    type="submit"
+                    disabled={submitting}
+                    className="w-full py-3 rounded-lg bg-white text-[#4a7a5c] font-semibold hover:bg-white/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {submitting ? "Submitting..." : "Join Waitlist"}
+                  </button>
+                  {result && (
+                    <p className={`mt-3 text-sm text-center ${result.success ? "text-white" : "text-red-300"}`}>
+                      {result.message}
+                    </p>
+                  )}
                 </div>
-              ))}
-              <div className="md:col-span-2 mt-4 submit-btn">
-                <button className="w-full py-3 rounded-lg bg-white text-[#4a7a5c] font-semibold hover:bg-white/90 transition-colors">
-                  Join Waitlist
-                </button>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
