@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import gsap from "gsap";
 
@@ -8,7 +8,6 @@ interface AudioToggleProps {
 
 export default function AudioToggle({ audioRef }: AudioToggleProps) {
   const [playing, setPlaying] = useState(false);
-  const [visible, setVisible] = useState(true);
   const btnRef = useRef<HTMLButtonElement>(null);
   const barsRef = useRef<HTMLDivElement>(null);
 
@@ -30,15 +29,15 @@ export default function AudioToggle({ audioRef }: AudioToggleProps) {
     };
   }, [audioRef]);
 
-  // Animate in when visible
+  // Animate in on mount
   useEffect(() => {
-    if (!visible || !btnRef.current) return;
+    if (!btnRef.current) return;
     gsap.fromTo(
       btnRef.current,
       { scale: 0, opacity: 0, rotate: -180 },
       { scale: 1, opacity: 1, rotate: 0, duration: 0.6, ease: "back.out(1.7)" }
     );
-  }, [visible]);
+  }, []);
 
   // Animate bars when playing
   useEffect(() => {
@@ -86,8 +85,6 @@ export default function AudioToggle({ audioRef }: AudioToggleProps) {
       audio.pause();
     }
   };
-
-  if (!visible) return null;
 
   return (
     <button
