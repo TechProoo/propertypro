@@ -54,7 +54,10 @@ export default function Waitlist() {
   }, []);
 
   return (
-    <div className="">
+    <>
+      {!preloaderDone && <Preloader onComplete={() => setPreloaderDone(true)} />}
+
+      <div className="">
       {/* Background Audio */}
       <audio ref={audioRef} src={bgAudio} />
 
@@ -86,5 +89,6 @@ export default function Waitlist() {
       {/* Audio Toggle */}
       <AudioToggle audioRef={audioRef} />
     </div>
+    </>
   );
 }
