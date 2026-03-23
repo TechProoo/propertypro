@@ -12,10 +12,19 @@ export default function Waitlist() {
     const audio = audioRef.current;
     if (!audio) return;
     const START_TIME = 14;
-    audio.currentTime = START_TIME;
     audio.volume = 0.75;
+    audio.preload = "metadata";
 
-    // Loop back to 12s when the track ends
+    // Only set currentTime once metadata is available
+    const seekToStart = () => {
+      if (audio.readyState >= 1) {
+        audio.currentTime = START_TIME;
+      }
+    };
+    audio.addEventListener("loadedmetadata", seekToStart, { once: true });
+    seekToStart(); // in case already loaded
+
+    // Loop back to start time when the track ends
     const onEnded = () => {
       audio.currentTime = START_TIME;
       audio.play();
@@ -29,13 +38,16 @@ export default function Waitlist() {
       events.forEach((e) => document.removeEventListener(e, play));
     };
     // Try autoplay first
-    audio.play().catch(() => {
+    audio.play().then(() => {
+      audio.currentTime = START_TIME;
+    }).catch(() => {
       // Browser blocked it — wait for any user interaction
       events.forEach((e) => document.addEventListener(e, play, { once: true }));
     });
     return () => {
       events.forEach((e) => document.removeEventListener(e, play));
       audio.removeEventListener("ended", onEnded);
+      audio.removeEventListener("loadedmetadata", seekToStart);
     };
   }, []);
 
