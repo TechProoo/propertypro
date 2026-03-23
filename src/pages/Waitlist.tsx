@@ -11,11 +11,20 @@ export default function Waitlist() {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-    audio.currentTime = 12;
+    const START_TIME = 14;
+    audio.currentTime = START_TIME;
     audio.volume = 0.75;
+
+    // Loop back to 12s when the track ends
+    const onEnded = () => {
+      audio.currentTime = START_TIME;
+      audio.play();
+    };
+    audio.addEventListener("ended", onEnded);
 
     const events = ["click", "scroll", "keydown", "touchstart"] as const;
     const play = () => {
+      audio.currentTime = START_TIME;
       audio.play();
       events.forEach((e) => document.removeEventListener(e, play));
     };
@@ -24,13 +33,16 @@ export default function Waitlist() {
       // Browser blocked it — wait for any user interaction
       events.forEach((e) => document.addEventListener(e, play, { once: true }));
     });
-    return () => events.forEach((e) => document.removeEventListener(e, play));
+    return () => {
+      events.forEach((e) => document.removeEventListener(e, play));
+      audio.removeEventListener("ended", onEnded);
+    };
   }, []);
 
   return (
     <div className="">
       {/* Background Audio */}
-      <audio ref={audioRef} src={bgAudio} loop />
+      <audio ref={audioRef} src={bgAudio} />
 
       {/* Background Video */}
       <video
