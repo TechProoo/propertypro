@@ -171,34 +171,29 @@ const WaitListForm = () => {
     message: string;
   } | null>(null);
   const formRef = useRef<HTMLDivElement>(null);
-  const sidebarRef = useRef<HTMLDivElement>(null);
+
   const headerRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
 
   // Page load animation
   useEffect(() => {
+    const targets = [headerRef.current, contentRef.current].filter(Boolean);
+    if (!targets.length) return;
+
     const ctx = gsap.context(() => {
-      gsap.set([sidebarRef.current, headerRef.current, contentRef.current], {
-        opacity: 0,
-      });
+      gsap.set(targets, { opacity: 0 });
       if (tabsRef.current) {
         gsap.set(Array.from(tabsRef.current.children), { opacity: 0 });
       }
 
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
-      tl.to(sidebarRef.current, {
-        x: 0,
-        opacity: 1,
-        duration: 0.8,
-      })
-        .fromTo(
-          headerRef.current,
-          { y: -30, opacity: 0 },
-          { y: 0, opacity: 1, duration: 0.6 },
-          "-=0.5",
-        )
+      tl.fromTo(
+        headerRef.current,
+        { y: -30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6 },
+      )
         .fromTo(
           contentRef.current,
           { y: 40, opacity: 0, scale: 0.97 },
@@ -334,7 +329,7 @@ const WaitListForm = () => {
           {/* Tab Content */}
           <div
             ref={contentRef}
-            className="bg-[#4a7a5c]  rounded-2xl m-3 p-4 sm:m-6 sm:p-8"
+            className="bg-[#4a7a5c]  rounded-2xl m-3 p-4 sm:m-6 sm:p-8 mt-10"
           >
             <div className="px-2 sm:px-10 pt-6">
               <div className="relative sm:static">
