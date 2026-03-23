@@ -10,35 +10,66 @@ const tabs = [
   "Partner / Investor",
 ];
 
-const tabFields: Record<number, { label: string; type: string; placeholder: string }[]> = {
+const tabFields: Record<
+  number,
+  { label: string; type: string; placeholder: string }[]
+> = {
   0: [
     { label: "First Name", type: "text", placeholder: "Enter Your First Name" },
     { label: "Last Name", type: "text", placeholder: "Enter Your Last Name" },
-    { label: "Company Name", type: "text", placeholder: "Enter Your Company Name" },
+    {
+      label: "Company Name",
+      type: "text",
+      placeholder: "Enter Your Company Name",
+    },
     { label: "Location", type: "text", placeholder: "Enter Your Location" },
-    { label: "Phone Number", type: "tel", placeholder: "Enter Your Phone Number" },
+    {
+      label: "Phone Number",
+      type: "tel",
+      placeholder: "Enter Your Phone Number",
+    },
     { label: "Email", type: "email", placeholder: "Email Address" },
   ],
   1: [
     { label: "First Name", type: "text", placeholder: "Enter Your First Name" },
     { label: "Last Name", type: "text", placeholder: "Enter Your Last Name" },
-    { label: "Phone Number", type: "tel", placeholder: "Enter Your Phone Number" },
+    {
+      label: "Phone Number",
+      type: "tel",
+      placeholder: "Enter Your Phone Number",
+    },
     { label: "Email", type: "email", placeholder: "Email Address" },
   ],
   2: [
     { label: "First Name", type: "text", placeholder: "Enter Your First Name" },
     { label: "Last Name", type: "text", placeholder: "Enter Your Last Name" },
-    { label: "Company Name", type: "text", placeholder: "Enter Your Company Name" },
+    {
+      label: "Company Name",
+      type: "text",
+      placeholder: "Enter Your Company Name",
+    },
     { label: "Location", type: "text", placeholder: "Enter Your Location" },
-    { label: "Phone Number", type: "tel", placeholder: "Enter Your Phone Number" },
+    {
+      label: "Phone Number",
+      type: "tel",
+      placeholder: "Enter Your Phone Number",
+    },
     { label: "Email", type: "email", placeholder: "Email Address" },
   ],
   3: [
     { label: "First Name", type: "text", placeholder: "Enter Your First Name" },
     { label: "Last Name", type: "text", placeholder: "Enter Your Last Name" },
-    { label: "Company Name", type: "text", placeholder: "Enter Your Company Name" },
+    {
+      label: "Company Name",
+      type: "text",
+      placeholder: "Enter Your Company Name",
+    },
     { label: "Location", type: "text", placeholder: "Enter Your Location" },
-    { label: "Phone Number", type: "tel", placeholder: "Enter Your Phone Number" },
+    {
+      label: "Phone Number",
+      type: "tel",
+      placeholder: "Enter Your Phone Number",
+    },
     { label: "Email", type: "email", placeholder: "Email Address" },
   ],
 };
@@ -73,19 +104,19 @@ const WaitListForm = () => {
           headerRef.current,
           { y: -30, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.6 },
-          "-=0.5"
+          "-=0.5",
         )
         .fromTo(
           contentRef.current,
           { y: 40, opacity: 0, scale: 0.97 },
           { y: 0, opacity: 1, scale: 1, duration: 0.7 },
-          "-=0.4"
+          "-=0.4",
         )
         .fromTo(
           tabsRef.current ? Array.from(tabsRef.current.children) : [],
           { y: -20, opacity: 0 },
           { y: 0, opacity: 1, duration: 0.4, stagger: 0.08 },
-          "-=0.3"
+          "-=0.3",
         );
     });
 
@@ -107,7 +138,7 @@ const WaitListForm = () => {
         duration: 0.4,
         stagger: 0.06,
         ease: "power2.out",
-      }
+      },
     );
 
     if (btn) {
@@ -120,7 +151,7 @@ const WaitListForm = () => {
           duration: 0.4,
           delay: 0.3,
           ease: "power2.out",
-        }
+        },
       );
     }
   }, [activeTab]);
@@ -132,7 +163,7 @@ const WaitListForm = () => {
       <div className="grid grid-cols-12 min-h-screen">
         <div
           ref={sidebarRef}
-          className="hidden md:block md:col-span-2 form-left relative min-h-screen"
+          className="hidden md:block md:col-span-2 form-left sticky top-0 h-screen self-start"
         >
           <div className="lft_logo md:inline hidden">
             <img src={Logo} className="w-100" alt="Logo" />
@@ -166,38 +197,39 @@ const WaitListForm = () => {
           </div>
 
           {/* Tab Content */}
-          <div ref={contentRef} className="bg-[#4a7a5c] min-h-screen rounded-2xl m-6 p-8">
-            <div className="px-10 pt-6">
-              <div ref={tabsRef} className="flex items-center gap-0">
-                {tabs.map((tab, index) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(index)}
-                    className={`relative px-6 py-3 text-sm font-medium transition-all duration-200 border-b-2 ${
-                      activeTab === index
-                        ? "border-white text-white"
-                        : "border-transparent text-white/50 hover:text-white/80"
-                    }`}
-                  >
-                    <span className="flex items-center gap-2">
-                      <span
-                        className={`w-7 h-7 flex items-center justify-center rounded-full text-xs font-bold transition-all duration-200 ${
-                          activeTab === index
-                            ? "bg-white text-[#4a7a5c]"
-                            : "bg-white/20 text-white/60"
-                        }`}
-                      >
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
+          <div
+            ref={contentRef}
+            className="bg-[#4a7a5c] min-h-screen rounded-2xl m-3 p-4 sm:m-6 sm:p-8"
+          >
+            <div className="px-2 sm:px-10 pt-6">
+              <div className="relative sm:static">
+                <div
+                  ref={tabsRef}
+                  className="flex overflow-x-auto gap-0 scrollbar-hide"
+                >
+                  {tabs.map((tab, index) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(index)}
+                      className={`relative px-3 py-2 sm:px-6 sm:py-3 text-xs sm:text-sm font-medium transition-all duration-200 border-b-2 whitespace-nowrap ${
+                        activeTab === index
+                          ? "border-white text-white"
+                          : "border-transparent text-white/50 hover:text-white/80"
+                      }`}
+                    >
                       {tab}
-                    </span>
-                  </button>
-                ))}
+                    </button>
+                  ))}
+                </div>
+                <div className="sm:hidden absolute right-0 top-0 bottom-0 w-8 bg-linear-to-l from-[#4a7a5c] to-transparent pointer-events-none"></div>
               </div>
               <div className="h-px bg-white/20 -mt-px"></div>
             </div>
 
-            <div ref={formRef} className="grid md:grid-cols-2 gap-6 mt-8">
+            <div
+              ref={formRef}
+              className="grid md:grid-cols-2 gap-4 sm:gap-6 mt-6 sm:mt-8 px-2 sm:px-0"
+            >
               {fields.map((field) => (
                 <div key={`${activeTab}-${field.label}`} className="form-field">
                   <label className="block text-white/80 text-sm mb-2">
