@@ -304,7 +304,7 @@ const WaitListForm = () => {
         </div> */}
         <div className="col-span-12 form-right">
           <div ref={headerRef} className="form-right-header">
-            <div className="form_ic flex justify-between items-center px-10 md:pt-5 pt-2">
+            <div className="form_ic flex justify-between items-center px-10 pt-5">
               <div className="logo_mobile">
                 <img src={Logo} className="w-30" alt="" />
               </div>
