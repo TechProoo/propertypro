@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import Typed from "typed.js";
 import { ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Hero() {
   const typedRef = useRef<HTMLSpanElement>(null);
@@ -42,10 +43,10 @@ export default function Hero() {
           </p>
 
           <div style={{ marginTop: "50px" }}>
-            <button className="hero-btn">
+            <Link to={"/waitlist-form"} className="hero-btn">
               Join Our Network
               <ArrowRight className="arrow" size={18} />
-            </button>
+            </Link>
           </div>
         </div>
       </div>

@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
-import Logo from "../assets/logo.png";
+import Logo from "../../assets/logo.png";
 
-const navLinks = [
-  { label: "Home", href: "#", active: true },
-  { label: "About Us", href: "#" },
-  { label: "Services", href: "#" },
-  { label: "Contacts", href: "#" },
-];
+// const navLinks = [
+//   { label: "Home", href: "#", active: true },
+//   { label: "About Us", href: "#" },
+//   { label: "Services", href: "#" },
+//   { label: "Contacts", href: "#" },
+// ];
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -15,7 +15,7 @@ export default function Navbar() {
   return (
     <header className="navbar-header">
       <nav className="navbar">
-        <a href="#" className="navbar-logo">
+        <a href="#" className="navbar-logo m-auto">
           <img src={Logo} className="w-30" alt="" />
         </a>
 
@@ -27,7 +27,7 @@ export default function Navbar() {
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
 
-        <ul className={`navbar-links${menuOpen ? " open" : ""}`}>
+        {/* <ul className={`navbar-links${menuOpen ? " open" : ""}`}>
           {navLinks.map((link) => (
             <li key={link.label}>
               <a
@@ -39,7 +39,7 @@ export default function Navbar() {
               </a>
             </li>
           ))}
-        </ul>
+        </ul> */}
       </nav>
     </header>
   );
