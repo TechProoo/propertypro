@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+// import { useState } from "react";
+// import { Menu, X } from "lucide-react";
 import Logo from "../../assets/logo.png";
 
 // const navLinks = [
@@ -10,7 +10,7 @@ import Logo from "../../assets/logo.png";
 // ];
 
 export default function Navbar() {
-  const [menuOpen, setMenuOpen] = useState(false);
+  // const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="navbar-header">
