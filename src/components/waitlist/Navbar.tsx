@@ -18,14 +18,14 @@ export default function Navbar() {
         <a href="#" className="navbar-logo m-auto">
           <img src={Logo} className="w-30" alt="" />
         </a>
-
+        {/* 
         <button
           className="navbar-toggle"
           onClick={() => setMenuOpen(!menuOpen)}
           aria-label="Toggle navigation"
         >
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        </button> */}
 
         {/* <ul className={`navbar-links${menuOpen ? " open" : ""}`}>
           {navLinks.map((link) => (

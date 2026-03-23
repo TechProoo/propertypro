@@ -49,7 +49,7 @@ export default function Waitlist() {
       <div className="fixed inset-0 bg-primary-dark/50 -z-5"></div>
 
       {/* Content */}
-      <div className="relative text-white h-screen overflow-hidden">
+      <div className="relative text-white overflow-hidden">
         <Navbar />
         <Hero />
       </div>
