@@ -8,6 +8,7 @@ import StatCards from "@/components/viewwaitlist/StatCards";
 import WaitlistTable, {
   type WaitlistEntry,
 } from "@/components/viewwaitlist/WaitlistTable";
+import UserDetailsModal from "@/components/viewwaitlist/UserDetailsModal";
 
 const TABS = [
   { key: "All", label: "All" },
@@ -246,6 +247,12 @@ export default function ViewWaitList() {
           </main>
         </SidebarInset>
       </SidebarProvider>
+
+      {/* User Details Modal */}
+      <UserDetailsModal
+        entry={selectedEntry}
+        onClose={() => setSelectedEntry(null)}
+      />
     </>
   );
 }
