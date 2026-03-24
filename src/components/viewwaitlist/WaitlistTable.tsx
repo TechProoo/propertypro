@@ -98,13 +98,12 @@ export default function WaitlistTable({
             const avatarColor = avatarColors[i % avatarColors.length];
             const initials =
               `${entry.first_name[0]}${entry.last_name[0]}`.toUpperCase();
-            const registeredDate = new Date(entry.created_at).toLocaleDateString(
-              "en-US",
-              {
-                month: "short",
-                day: "numeric",
-              }
-            );
+            const registeredDate = new Date(
+              entry.created_at,
+            ).toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+            });
 
             return (
               <div key={entry.id} className="p-4">

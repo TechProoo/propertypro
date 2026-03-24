@@ -57,7 +57,7 @@ export default function UserDetailsModal({
       month: "long",
       day: "numeric",
       year: "numeric",
-    }
+    },
   );
 
   return (
@@ -172,7 +172,10 @@ export default function UserDetailsModal({
             {/* Registration Date */}
             <div className="bg-gray-50 rounded-xl p-4">
               <div className="flex items-start gap-3">
-                <Calendar size={18} className="text-[#2f9e61] mt-0.5 shrink-0" />
+                <Calendar
+                  size={18}
+                  className="text-[#2f9e61] mt-0.5 shrink-0"
+                />
                 <div className="min-w-0">
                   <p className="text-xs text-gray-500 mb-1">Date Registered</p>
                   <p className="text-sm font-medium text-gray-800">

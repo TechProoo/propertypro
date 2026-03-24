@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Search, Download, Menu } from "lucide-react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import AppSidebar, {
@@ -9,6 +9,9 @@ import WaitlistTable, {
   type WaitlistEntry,
 } from "@/components/viewwaitlist/WaitlistTable";
 import UserDetailsModal from "@/components/viewwaitlist/UserDetailsModal";
+import { api } from "@/api";
+import { useApi } from "@/api/hooks";
+import { getErrorMessage } from "@/api/utils";
 
 const TABS = [
   { key: "All", label: "All" },
@@ -21,66 +24,34 @@ const TABS = [
   { key: "Partner / Investor", label: "Partner / Investor" },
 ];
 
-const MOCK_DATA: WaitlistEntry[] = [
-  {
-    id: "1",
-    first_name: "Chidi",
-    last_name: "Okafor",
-    email: "chidi@example.com",
-    phone: "+234 801 234 5678",
-    category: "Real Estate Agent",
-    location: "Lagos",
-    company_name: "Okafor Realty",
-    created_at: "2026-03-01T10:00:00Z",
-  },
-  {
-    id: "2",
-    first_name: "Amina",
-    last_name: "Hassan",
-    email: "amina@example.com",
-    phone: "+234 802 345 6789",
-    category: "Builder",
-    location: "Abuja",
-    company_name: "",
-    created_at: "2026-03-05T11:30:00Z",
-  },
-  {
-    id: "3",
-    first_name: "Tunde",
-    last_name: "Adeyemi",
-    email: "tunde@example.com",
-    phone: "+234 803 456 7890",
-    category: "Building Materials Supplier/Installer",
-    location: "Ibadan",
-    company_name: "Adeyemi Supplies Ltd",
-    created_at: "2026-03-10T09:15:00Z",
-  },
-  {
-    id: "4",
-    first_name: "Ngozi",
-    last_name: "Eze",
-    email: "ngozi@example.com",
-    phone: "+234 804 567 8901",
-    category: "Partner / Investor",
-    location: "Port Harcourt",
-    company_name: "Eze Ventures",
-    created_at: "2026-03-15T14:00:00Z",
-  },
-  {
-    id: "5",
-    first_name: "Emeka",
-    last_name: "Nwosu",
-    email: "emeka@example.com",
-    phone: "+234 805 678 9012",
-    category: "Real Estate Agent",
-    location: "Enugu",
-    company_name: "Prime Homes",
-    created_at: "2026-03-18T08:45:00Z",
-  },
-];
+/**
+ * Map API user types to UI category labels
+ */
+function mapUserTypeToCategory(type: string): string {
+  const typeMap: Record<string, string> = {
+    REAL_ESTATE_AGENT: "Real Estate Agent",
+    BUILDER: "Builder",
+    BUILDING_MATERIALS_SUPPLIER_INSTALLER:
+      "Building Materials Supplier/Installer",
+    PARTNER_INVESTOR: "Partner / Investor",
+  };
+  return typeMap[type] || type;
+}
 
 export default function ViewWaitList() {
-  const [entries, setEntries] = useState<WaitlistEntry[]>(MOCK_DATA);
+  const { data, loading, error, execute } = useApi(
+    () => api.waitlist.getAll(),
+    []
+  );
+
+  const apiEntries = data ?? [];
+
+  // Map API response to component interface (type -> category)
+  const entries = apiEntries.map((entry) => ({
+    ...entry,
+    category: mapUserTypeToCategory(entry.type),
+  }));
+
   const [activeTab, setActiveTab] = useState("All");
   const [search, setSearch] = useState("");
   const [selectedEntry, setSelectedEntry] = useState<WaitlistEntry | null>(
@@ -88,7 +59,13 @@ export default function ViewWaitList() {
   );
   const [page, setPage] = useState(1);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const perPage = 10;
+
+  // Fetch waitlist on component mount
+  useEffect(() => {
+    execute();
+  }, [execute]);
 
   const filtered = useMemo(
     () =>
@@ -123,6 +100,18 @@ export default function ViewWaitList() {
       suppliersAndServices: c["Building Materials Supplier/Installer"] ?? 0,
     };
   }, [entries]);
+
+  // Handle delete with API call
+  const handleDelete = async (id: string) => {
+    try {
+      await api.waitlist.delete(id);
+      // Refresh the list after deletion
+      await execute();
+      setDeleteError(null);
+    } catch (err) {
+      setDeleteError(getErrorMessage(err));
+    }
+  };
 
   return (
     <>
@@ -201,6 +190,32 @@ export default function ViewWaitList() {
                 />
               </div>
 
+              {/* Error Messages */}
+              {error && (
+                <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200">
+                  <p className="text-sm font-medium text-red-800">
+                    {getErrorMessage(error)}
+                  </p>
+                </div>
+              )}
+
+              {deleteError && (
+                <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200">
+                  <p className="text-sm font-medium text-red-800">
+                    Failed to delete: {deleteError}
+                  </p>
+                </div>
+              )}
+
+              {/* Loading State */}
+              {loading && (
+                <div className="mb-6 p-4 rounded-lg bg-blue-50 border border-blue-200">
+                  <p className="text-sm font-medium text-blue-800">
+                    Loading waitlist data...
+                  </p>
+                </div>
+              )}
+
               <StatCards counts={counts} />
 
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mt-6">
@@ -228,9 +243,7 @@ export default function ViewWaitList() {
 
                 <WaitlistTable
                   entries={paginated}
-                  onDelete={(id) =>
-                    setEntries((prev) => prev.filter((e) => e.id !== id))
-                  }
+                  onDelete={handleDelete}
                   onView={setSelectedEntry}
                   page={page}
                   perPage={perPage}
