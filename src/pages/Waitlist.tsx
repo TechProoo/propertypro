@@ -8,7 +8,29 @@ import bgAudio from "../assets/4935e98a-7b02-44b0-a360-47b204b36cfa.m4a";
 
 export default function Waitlist() {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [preloaderDone, setPreloaderDone] = useState(false);
+  const preloaderCompleteRef = useRef(false);
+  const videoReadyRef = useRef(false);
+
+  // Check if both preloader animation and video are ready
+  const checkReadiness = () => {
+    if (preloaderCompleteRef.current && videoReadyRef.current) {
+      setPreloaderDone(true);
+    }
+  };
+
+  // Handle preloader animation complete
+  const handlePreloaderComplete = () => {
+    preloaderCompleteRef.current = true;
+    checkReadiness();
+  };
+
+  // Handle video ready to play
+  const handleVideoCanPlayThrough = () => {
+    videoReadyRef.current = true;
+    checkReadiness();
+  };
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -61,7 +83,7 @@ export default function Waitlist() {
   return (
     <>
       {!preloaderDone && (
-        <Preloader onComplete={() => setPreloaderDone(true)} />
+        <Preloader onComplete={handlePreloaderComplete} />
       )}
 
       <div className="">
@@ -70,19 +92,21 @@ export default function Waitlist() {
 
         {/* Background Video */}
         <video
+          ref={videoRef}
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
           poster="/img/poster.webp"
+          onCanPlayThrough={handleVideoCanPlayThrough}
           className="fixed top-0 left-0 w-full h-full object-cover -z-10 pointer-events-none"
         >
           <source src="/img/127983 (Original).mp4" type="video/mp4" />
         </video>
 
         {/* Dark overlay over video */}
-        <div className="fixed inset-0 bg-primary-dark/70 -z-5"></div>
+        <div className="fixed inset-0 bg-black/60 -z-5"></div>
 
         {/* Content */}
         <div className="text-white overflow-y-hidden">
