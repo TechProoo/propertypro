@@ -1,4 +1,6 @@
 import { X, Mail, Phone, MapPin, Building2, Calendar } from "lucide-react";
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
 
 export interface WaitlistEntry {
   id: string;
@@ -48,6 +50,50 @@ export default function UserDetailsModal({
 }: UserDetailsModalProps) {
   if (!entry) return null;
 
+  const backdropRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!entry) return;
+
+    const ctx = gsap.context(() => {
+      // Backdrop fade in
+      gsap.fromTo(
+        backdropRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: "power2.out" }
+      );
+
+      // Modal scale and fade in
+      gsap.fromTo(
+        modalRef.current,
+        { scale: 0.95, opacity: 0, y: 20 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.2)" }
+      );
+
+      // Stagger content sections
+      const contentSections = modalRef.current?.querySelectorAll(
+        ".content-section"
+      );
+      if (contentSections) {
+        gsap.fromTo(
+          contentSections,
+          { opacity: 0, y: 15 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 0.35,
+            stagger: 0.08,
+            ease: "power2.out",
+            delay: 0.15,
+          }
+        );
+      }
+    });
+
+    return () => ctx.revert();
+  }, [entry]);
+
   const avatarColor = avatarColors[parseInt(entry.id) % avatarColors.length];
   const initials = `${entry.first_name[0]}${entry.last_name[0]}`.toUpperCase();
   const cat = categoryConfig[entry.category];
@@ -64,6 +110,7 @@ export default function UserDetailsModal({
     <>
       {/* Backdrop */}
       <div
+        ref={backdropRef}
         className="fixed inset-0 bg-black/50 z-40 transition-opacity"
         onClick={onClose}
       />
@@ -71,6 +118,7 @@ export default function UserDetailsModal({
       {/* Modal */}
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
+          ref={modalRef}
           className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
@@ -88,7 +136,7 @@ export default function UserDetailsModal({
           {/* Content */}
           <div className="p-6 space-y-6">
             {/* Profile Section */}
-            <div className="flex flex-col items-center text-center">
+            <div className="content-section flex flex-col items-center text-center">
               <div
                 className={`w-16 h-16 rounded-full ${avatarColor} flex items-center justify-center text-white text-2xl font-bold mb-4`}
               >
@@ -105,7 +153,7 @@ export default function UserDetailsModal({
             </div>
 
             {/* Contact Information */}
-            <div className="bg-gray-50 rounded-xl p-4 space-y-4">
+            <div className="content-section bg-gray-50 rounded-xl p-4 space-y-4">
               <h4 className="text-sm font-semibold text-gray-800">
                 Contact Information
               </h4>
@@ -134,7 +182,7 @@ export default function UserDetailsModal({
             </div>
 
             {/* Business Information */}
-            <div className="bg-gray-50 rounded-xl p-4 space-y-4">
+            <div className="content-section bg-gray-50 rounded-xl p-4 space-y-4">
               <h4 className="text-sm font-semibold text-gray-800">
                 Business Information
               </h4>
@@ -170,7 +218,7 @@ export default function UserDetailsModal({
             </div>
 
             {/* Registration Date */}
-            <div className="bg-gray-50 rounded-xl p-4">
+            <div className="content-section bg-gray-50 rounded-xl p-4">
               <div className="flex items-start gap-3">
                 <Calendar
                   size={18}
@@ -186,7 +234,7 @@ export default function UserDetailsModal({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-4 border-t border-gray-200">
+            <div className="content-section flex gap-3 pt-4 border-t border-gray-200">
               <button
                 onClick={onClose}
                 className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-700 text-sm font-semibold hover:bg-gray-50 transition-colors"

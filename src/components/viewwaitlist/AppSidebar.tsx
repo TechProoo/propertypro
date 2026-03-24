@@ -2,7 +2,8 @@ import { Users, Settings, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { Sidebar } from "@/components/ui/sidebar";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-
+import Logo from "../../assets/logo.png";
+import Admin from "../../assets/admin.jpg";
 const navItems = [
   { title: "Waitlist", url: "/admin/waitlist", icon: Users },
   { title: "Settings", url: "/admin/settings", icon: Settings },
@@ -18,9 +19,7 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
     <div className="flex flex-col h-full bg-[#1a2e27]">
       {/* Logo */}
       <div className="px-5 pt-6 pb-5">
-        <p className="text-white font-bold text-lg leading-tight">
-          PropertyLoop
-        </p>
+        <img src={Logo} className="w-50" alt="" />
         <p className="text-[#2f9e61] text-[10px] font-semibold tracking-[0.2em] uppercase mt-0.5">
           Admin Console
         </p>
@@ -55,14 +54,14 @@ function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         <div className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
           <div className="w-9 h-9 rounded-full bg-[#2f9e61]/30 border border-[#2f9e61]/50 flex items-center justify-center shrink-0 overflow-hidden">
             <img
-              src="https://i.pravatar.cc/36?img=12"
+              src={Admin}
               alt="Admin"
               className="w-full h-full object-cover"
             />
           </div>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-white truncate">
-              James Sterling
+              PropertyLoop
             </p>
             <p className="text-[11px] text-white/40 truncate">Director</p>
           </div>

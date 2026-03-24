@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, type FormEvent } from "react";
 import gsap from "gsap";
 import Logo from "../assets/logo.png";
 import { icons } from "../components/waitlist/SocialIcons";
+import waitlistService from "../api/services/waitlistService";
+import type { UserType } from "../api/types";
 
 const tabs = [
   "Real Estate Agent",
@@ -10,11 +12,11 @@ const tabs = [
   "Partner / Investor",
 ];
 
-const tabEmails: Record<number, string> = {
-  0: "agent@propertyloop.ng",
-  1: "builder@propertyloop.ng",
-  2: "supplier@propertyloop.ng",
-  3: "service@propertyloop.ng",
+const tabUserTypes: Record<number, UserType> = {
+  0: "REAL_ESTATE_AGENT",
+  1: "BUILDER",
+  2: "BUILDING_MATERIALS_SUPPLIER_INSTALLER",
+  3: "PARTNER_INVESTOR",
 };
 
 const tabFields: Record<
@@ -251,36 +253,31 @@ const WaitListForm = () => {
     setResult(null);
 
     const formData = new FormData(e.currentTarget);
-    formData.append("access_key", "b202617d-1bf3-416a-b20f-90bbe6e65e51");
-    formData.append("to_email", tabEmails[activeTab]);
-    formData.append("subject", `New Waitlist Signup - ${tabs[activeTab]}`);
-    formData.append("from_name", "PropertyLoop Waitlist");
-    formData.append("category", tabs[activeTab]);
 
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
+      const payload = {
+        first_name: formData.get("first_name") as string,
+        last_name: formData.get("last_name") as string,
+        company_name: (formData.get("company_name") as string) || undefined,
+        location: (formData.get("location") as string) || undefined,
+        phone: formData.get("phone") as string,
+        email: formData.get("email") as string,
+        type: tabUserTypes[activeTab],
+      };
 
-      if (data.success) {
-        setResult({
-          success: true,
-          message: "You've been added to the waitlist!",
-        });
-        (e.target as HTMLFormElement).reset();
-      } else {
-        setResult({
-          success: false,
-          message: "Something went wrong. Please try again.",
-        });
-      }
-    } catch {
+      await waitlistService.create(payload);
+
+      setResult({
+        success: true,
+        message: "You've been added to the waitlist!",
+      });
+      (e.target as HTMLFormElement).reset();
+    } catch (error) {
       setResult({
         success: false,
-        message: "Network error. Please try again.",
+        message: "Something went wrong. Please try again.",
       });
+      console.error("Waitlist submission error:", error);
     } finally {
       setSubmitting(false);
     }

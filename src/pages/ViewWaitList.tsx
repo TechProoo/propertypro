@@ -1,5 +1,6 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Search, Download, Menu } from "lucide-react";
+import gsap from "gsap";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import AppSidebar, {
   MobileSidebar,
@@ -41,8 +42,13 @@ function mapUserTypeToCategory(type: string): string {
 export default function ViewWaitList() {
   const { data, loading, error, execute } = useApi(
     () => api.waitlist.getAll(),
-    []
+    [],
   );
+
+  // Animation refs
+  const headerRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const tableRef = useRef<HTMLDivElement>(null);
 
   const apiEntries = data ?? [];
 
@@ -60,12 +66,62 @@ export default function ViewWaitList() {
   const [page, setPage] = useState(1);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [exportLoading, setExportLoading] = useState(false);
   const perPage = 10;
 
   // Fetch waitlist on component mount
   useEffect(() => {
     execute();
   }, [execute]);
+
+  // Page load animation
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      const elements = [
+        headerRef.current,
+        statsRef.current,
+        tableRef.current,
+      ].filter(Boolean);
+
+      gsap.set(elements, { opacity: 0, y: 20 });
+
+      gsap.to(headerRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        ease: "power2.out",
+      });
+
+      gsap.to(statsRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        delay: 0.15,
+        ease: "power2.out",
+      });
+
+      gsap.to(tableRef.current, {
+        opacity: 1,
+        y: 0,
+        duration: 0.6,
+        delay: 0.3,
+        ease: "power2.out",
+      });
+    });
+
+    return () => ctx.revert();
+  }, []);
+
+  // Tab switch animation
+  useEffect(() => {
+    if (!tableRef.current) return;
+
+    gsap.fromTo(
+      tableRef.current,
+      { opacity: 0.8, y: 10 },
+      { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" },
+    );
+  }, [activeTab]);
 
   const filtered = useMemo(
     () =>
@@ -113,6 +169,27 @@ export default function ViewWaitList() {
     }
   };
 
+  // Handle export to CSV
+  const handleExport = async () => {
+    setExportLoading(true);
+    try {
+      const blob = await api.waitlist.export();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `waitlist-${new Date().toISOString().split("T")[0]}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Export failed:", err);
+      setDeleteError("Failed to export waitlist. Please try again.");
+    } finally {
+      setExportLoading(false);
+    }
+  };
+
   return (
     <>
       {/* Mobile drawer — rendered outside SidebarProvider intentionally so it
@@ -132,7 +209,10 @@ export default function ViewWaitList() {
           <main className="bg-gray-50/50 min-h-full">
             <div className="p-4 lg:p-8">
               {/* Header */}
-              <div className="flex items-center justify-between mb-8">
+              <div
+                ref={headerRef}
+                className="flex items-center justify-between mb-8"
+              >
                 <div className="flex items-center gap-3">
                   {/* Hamburger — only visible on mobile */}
                   <button
@@ -165,9 +245,12 @@ export default function ViewWaitList() {
                       className="w-full h-10 pl-9 pr-3 rounded-lg bg-white border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
                     />
                   </div>
-                  <button className="h-10 px-3 md:px-4 rounded-lg bg-[#1a2e27] text-white text-sm font-semibold flex items-center gap-2 hover:bg-[#1a2e27]/90 whitespace-nowrap">
+                  <button 
+                    onClick={handleExport}
+                    disabled={exportLoading}
+                    className="h-10 px-3 md:px-4 rounded-lg bg-[#1a2e27] text-white text-sm font-semibold flex items-center gap-2 hover:bg-[#1a2e27]/90 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap transition-opacity">
                     <Download size={14} />
-                    <span className="hidden sm:inline">Export</span>
+                    <span className="hidden sm:inline">{exportLoading ? "Exporting..." : "Export"}</span>
                   </button>
                 </div>
               </div>
@@ -216,9 +299,14 @@ export default function ViewWaitList() {
                 </div>
               )}
 
-              <StatCards counts={counts} />
+              <div ref={statsRef}>
+                <StatCards counts={counts} />
+              </div>
 
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mt-6">
+              <div
+                ref={tableRef}
+                className="bg-white rounded-2xl border border-gray-100 shadow-sm mt-6"
+              >
                 {/* Tabs — scrollable on mobile */}
                 <div className="border-b border-gray-100">
                   <div className="flex overflow-x-auto scrollbar-hide px-2">
