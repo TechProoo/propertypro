@@ -272,10 +272,15 @@ const WaitListForm = () => {
         message: "You've been added to the waitlist!",
       });
       (e.target as HTMLFormElement).reset();
-    } catch (error) {
+    } catch (error: any) {
+      const errorMessage = 
+        error?.response?.data?.message ||
+        error?.message ||
+        "Something went wrong. Please try again.";
+      
       setResult({
         success: false,
-        message: "Something went wrong. Please try again.",
+        message: errorMessage,
       });
       console.error("Waitlist submission error:", error);
     } finally {
