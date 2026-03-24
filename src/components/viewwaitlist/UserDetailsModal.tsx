@@ -1,0 +1,202 @@
+import { X, Mail, Phone, MapPin, Building2, Calendar } from "lucide-react";
+
+export interface WaitlistEntry {
+  id: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: string;
+  category: string;
+  location?: string;
+  company_name?: string;
+  created_at: string;
+}
+
+interface UserDetailsModalProps {
+  entry: WaitlistEntry | null;
+  onClose: () => void;
+}
+
+const categoryConfig: Record<string, { label: string; className: string }> = {
+  "Real Estate Agent": {
+    label: "Real Estate Agent",
+    className: "bg-[#e8f5ee] text-[#2f9e61]",
+  },
+  Builder: { label: "Builder", className: "bg-[#e8f5ee] text-[#2f9e61]" },
+  "Building Materials Supplier/Installer": {
+    label: "Supplier",
+    className: "bg-gray-100 text-gray-600",
+  },
+  "Partner / Investor": {
+    label: "Partner / Investor",
+    className: "bg-red-100 text-red-600",
+  },
+};
+
+const avatarColors = [
+  "bg-emerald-200",
+  "bg-rose-200",
+  "bg-green-200",
+  "bg-slate-200",
+  "bg-rose-200",
+  "bg-cyan-200",
+];
+
+export default function UserDetailsModal({
+  entry,
+  onClose,
+}: UserDetailsModalProps) {
+  if (!entry) return null;
+
+  const avatarColor = avatarColors[parseInt(entry.id) % avatarColors.length];
+  const initials = `${entry.first_name[0]}${entry.last_name[0]}`.toUpperCase();
+  const cat = categoryConfig[entry.category];
+  const registeredDate = new Date(entry.created_at).toLocaleDateString(
+    "en-US",
+    {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+    }
+  );
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/50 z-40 transition-opacity"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div
+          className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+            <h2 className="text-lg font-bold text-gray-800">User Details</h2>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 space-y-6">
+            {/* Profile Section */}
+            <div className="flex flex-col items-center text-center">
+              <div
+                className={`w-16 h-16 rounded-full ${avatarColor} flex items-center justify-center text-white text-2xl font-bold mb-4`}
+              >
+                {initials}
+              </div>
+              <h3 className="text-xl font-bold text-gray-800">
+                {entry.first_name} {entry.last_name}
+              </h3>
+              <span
+                className={`inline-flex items-center px-3 py-1.5 rounded-md text-xs font-semibold mt-3 ${cat?.className ?? "bg-gray-100 text-gray-600"}`}
+              >
+                {cat?.label ?? entry.category}
+              </span>
+            </div>
+
+            {/* Contact Information */}
+            <div className="bg-gray-50 rounded-xl p-4 space-y-4">
+              <h4 className="text-sm font-semibold text-gray-800">
+                Contact Information
+              </h4>
+
+              {/* Email */}
+              <div className="flex items-start gap-3">
+                <Mail size={18} className="text-[#2f9e61] mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500 mb-1">Email</p>
+                  <p className="text-sm font-medium text-gray-800 break-all">
+                    {entry.email}
+                  </p>
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="flex items-start gap-3">
+                <Phone size={18} className="text-[#2f9e61] mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500 mb-1">Phone Number</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {entry.phone}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Business Information */}
+            <div className="bg-gray-50 rounded-xl p-4 space-y-4">
+              <h4 className="text-sm font-semibold text-gray-800">
+                Business Information
+              </h4>
+
+              {/* Location */}
+              <div className="flex items-start gap-3">
+                <MapPin size={18} className="text-[#2f9e61] mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500 mb-1">Location</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {entry.location || (
+                      <span className="text-gray-400">Not provided</span>
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              {/* Company */}
+              {entry.company_name && (
+                <div className="flex items-start gap-3">
+                  <Building2
+                    size={18}
+                    className="text-[#2f9e61] mt-0.5 shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-xs text-gray-500 mb-1">Company Name</p>
+                    <p className="text-sm font-medium text-gray-800">
+                      {entry.company_name}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Registration Date */}
+            <div className="bg-gray-50 rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <Calendar size={18} className="text-[#2f9e61] mt-0.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-500 mb-1">Date Registered</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {registeredDate}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex gap-3 pt-4 border-t border-gray-200">
+              <button
+                onClick={onClose}
+                className="flex-1 px-4 py-2.5 rounded-lg border border-gray-200 text-gray-700 text-sm font-semibold hover:bg-gray-50 transition-colors"
+              >
+                Close
+              </button>
+              <button className="flex-1 px-4 py-2.5 rounded-lg bg-[#2f9e61] text-white text-sm font-semibold hover:bg-[#2f9e61]/90 transition-colors">
+                Send Email
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

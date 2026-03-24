@@ -1,7 +1,9 @@
 import { useState, useMemo } from "react";
-import { Search, Download } from "lucide-react";
+import { Search, Download, Menu } from "lucide-react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
-import AppSidebar from "@/components/viewwaitlist/AppSidebar";
+import AppSidebar, {
+  MobileSidebar,
+} from "@/components/viewwaitlist/AppSidebar";
 import StatCards from "@/components/viewwaitlist/StatCards";
 import WaitlistTable, {
   type WaitlistEntry,
@@ -80,7 +82,11 @@ export default function ViewWaitList() {
   const [entries, setEntries] = useState<WaitlistEntry[]>(MOCK_DATA);
   const [activeTab, setActiveTab] = useState("All");
   const [search, setSearch] = useState("");
+  const [selectedEntry, setSelectedEntry] = useState<WaitlistEntry | null>(
+    null,
+  );
   const [page, setPage] = useState(1);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const perPage = 10;
 
   const filtered = useMemo(
@@ -118,93 +124,128 @@ export default function ViewWaitList() {
   }, [entries]);
 
   return (
-    /*
-      THE KEY LAYOUT TRICK:
-      - SidebarProvider gets h-screen + overflow-hidden so the flex row is
-        locked to the viewport. Neither column can make the page itself scroll.
-      - AppSidebar has h-screen on its own so it fills the locked row height.
-      - SidebarInset gets overflow-y-auto so ONLY the content area scrolls.
-      - The sidebar never moves because the page body itself never scrolls.
-    */
-    <SidebarProvider className="h-screen overflow-hidden">
-      <AppSidebar />
-      <SidebarInset className="overflow-y-auto">
-        <main className="bg-gray-50/50">
-          <div className="p-4 lg:p-8">
-            {/* Header */}
-            <div className="flex items-center justify-between mb-8">
-              <h1 className="text-2xl font-bold text-gray-800">
-                Waitlist Registrations
-              </h1>
-              <div className="flex items-center gap-3">
-                <div className="relative lg:w-64">
-                  <Search
-                    size={16}
-                    className="absolute top-1/2 -translate-y-1/2 left-3 text-gray-400"
-                  />
-                  <input
-                    type="search"
-                    placeholder="Search registrants..."
-                    value={search}
-                    onChange={(e) => {
-                      setSearch(e.target.value);
-                      setPage(1);
-                    }}
-                    className="w-full h-10 pl-9 pr-3 rounded-lg bg-white border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
-                  />
+    <>
+      {/* Mobile drawer — rendered outside SidebarProvider intentionally so it
+          overlays the entire screen edge-to-edge */}
+      <MobileSidebar
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
+
+      {/* h-screen + overflow-hidden locks the layout to the viewport so the
+          sidebar never scrolls with the page — only SidebarInset scrolls */}
+      <SidebarProvider className="h-screen overflow-hidden">
+        {/* Desktop sidebar — hidden on mobile via the hidden md:flex inside AppSidebar */}
+        <AppSidebar />
+
+        <SidebarInset className="overflow-y-auto">
+          <main className="bg-gray-50/50 min-h-full">
+            <div className="p-4 lg:p-8">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  {/* Hamburger — only visible on mobile */}
+                  <button
+                    onClick={() => setMobileMenuOpen(true)}
+                    className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
+                    aria-label="Open menu"
+                  >
+                    <Menu size={20} className="text-gray-600" />
+                  </button>
+                  <h1 className="text-xl md:text-2xl font-bold text-gray-800">
+                    Waitlist Registrations
+                  </h1>
                 </div>
-                <button className="h-10 px-4 rounded-lg bg-[#1a2e27] text-white text-sm font-semibold flex items-center gap-2 hover:bg-[#1a2e27]/90">
-                  <Download size={14} />
-                  Export
-                </button>
-              </div>
-            </div>
 
-            <StatCards counts={counts} />
-
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mt-6">
-              {/* Tabs */}
-              <div className="p-2 border-b border-gray-100">
-                <div className="flex items-center flex-wrap gap-y-1">
-                  {TABS.map((tab) => (
-                    <button
-                      key={tab.key}
-                      onClick={() => {
-                        setActiveTab(tab.key);
+                <div className="flex items-center gap-2 md:gap-3">
+                  {/* Search — hidden on mobile, shown on md+ */}
+                  <div className="relative hidden md:block lg:w-64">
+                    <Search
+                      size={16}
+                      className="absolute top-1/2 -translate-y-1/2 left-3 text-gray-400"
+                    />
+                    <input
+                      type="search"
+                      placeholder="Search registrants..."
+                      value={search}
+                      onChange={(e) => {
+                        setSearch(e.target.value);
                         setPage(1);
                       }}
-                      className={`px-4 py-2 text-sm font-semibold transition-colors ${
-                        activeTab === tab.key
-                          ? "text-[#2f9e61]"
-                          : "text-gray-500 hover:text-gray-700"
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
+                      className="w-full h-10 pl-9 pr-3 rounded-lg bg-white border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+                    />
+                  </div>
+                  <button className="h-10 px-3 md:px-4 rounded-lg bg-[#1a2e27] text-white text-sm font-semibold flex items-center gap-2 hover:bg-[#1a2e27]/90 whitespace-nowrap">
+                    <Download size={14} />
+                    <span className="hidden sm:inline">Export</span>
+                  </button>
                 </div>
               </div>
 
-              <WaitlistTable
-                entries={paginated}
-                onDelete={(id) =>
-                  setEntries((prev) => prev.filter((e) => e.id !== id))
-                }
-                onView={() => {}}
-                page={page}
-                perPage={perPage}
-                total={filtered.length}
-                onPrev={() => setPage((p) => Math.max(1, p - 1))}
-                onNext={() =>
-                  setPage((p) =>
-                    Math.min(Math.ceil(filtered.length / perPage), p + 1),
-                  )
-                }
-              />
+              {/* Mobile search — shown below header on small screens */}
+              <div className="md:hidden mb-6 relative">
+                <Search
+                  size={16}
+                  className="absolute top-1/2 -translate-y-1/2 left-3 text-gray-400"
+                />
+                <input
+                  type="search"
+                  placeholder="Search registrants..."
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full h-10 pl-9 pr-3 rounded-lg bg-white border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-gray-200"
+                />
+              </div>
+
+              <StatCards counts={counts} />
+
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm mt-6">
+                {/* Tabs — scrollable on mobile */}
+                <div className="border-b border-gray-100">
+                  <div className="flex overflow-x-auto scrollbar-hide px-2">
+                    {TABS.map((tab) => (
+                      <button
+                        key={tab.key}
+                        onClick={() => {
+                          setActiveTab(tab.key);
+                          setPage(1);
+                        }}
+                        className={`px-3 md:px-4 py-3 text-xs md:text-sm font-semibold transition-colors whitespace-nowrap shrink-0 border-b-2 -mb-px ${
+                          activeTab === tab.key
+                            ? "text-[#2f9e61] border-[#2f9e61]"
+                            : "text-gray-500 hover:text-gray-700 border-transparent"
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <WaitlistTable
+                  entries={paginated}
+                  onDelete={(id) =>
+                    setEntries((prev) => prev.filter((e) => e.id !== id))
+                  }
+                  onView={setSelectedEntry}
+                  page={page}
+                  perPage={perPage}
+                  total={filtered.length}
+                  onPrev={() => setPage((p) => Math.max(1, p - 1))}
+                  onNext={() =>
+                    setPage((p) =>
+                      Math.min(Math.ceil(filtered.length / perPage), p + 1),
+                    )
+                  }
+                />
+              </div>
             </div>
-          </div>
-        </main>
-      </SidebarInset>
-    </SidebarProvider>
+          </main>
+        </SidebarInset>
+      </SidebarProvider>
+    </>
   );
 }

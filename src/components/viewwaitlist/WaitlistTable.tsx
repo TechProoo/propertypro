@@ -90,7 +90,102 @@ export default function WaitlistTable({
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-      <div className="overflow-x-auto">
+      {/* Mobile Card View */}
+      <div className="md:hidden">
+        <div className="divide-y divide-gray-100">
+          {entries.map((entry, i) => {
+            const cat = categoryConfig[entry.category];
+            const avatarColor = avatarColors[i % avatarColors.length];
+            const initials =
+              `${entry.first_name[0]}${entry.last_name[0]}`.toUpperCase();
+            const registeredDate = new Date(entry.created_at).toLocaleDateString(
+              "en-US",
+              {
+                month: "short",
+                day: "numeric",
+              }
+            );
+
+            return (
+              <div key={entry.id} className="p-4">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`w-10 h-10 rounded-full ${avatarColor} flex items-center justify-center text-white text-xs font-bold shrink-0`}
+                    >
+                      {initials}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-gray-800 text-sm">
+                        {entry.first_name} {entry.last_name}
+                      </p>
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold mt-1 ${cat?.className ?? "bg-gray-100 text-gray-600"}`}
+                      >
+                        {cat?.label ?? entry.category}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 ml-2">
+                    <button
+                      onClick={() => onView(entry)}
+                      className="p-1.5 rounded-md text-gray-300 hover:text-blue-500 hover:bg-blue-50 transition-colors"
+                    >
+                      <Eye size={16} />
+                    </button>
+                    <button
+                      onClick={() => onDelete(entry.id)}
+                      className="p-1.5 rounded-md text-gray-300 hover:text-red-500 hover:bg-red-50 transition-colors"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Details */}
+                <div className="space-y-2 text-xs text-gray-600">
+                  <div>
+                    <p className="text-gray-400 mb-0.5">Email</p>
+                    <p className="font-medium text-gray-800 break-all">
+                      {entry.email}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 mb-0.5">Phone</p>
+                    <p className="font-medium text-gray-800">{entry.phone}</p>
+                  </div>
+                  {entry.location && (
+                    <div>
+                      <p className="text-gray-400 mb-0.5">Location</p>
+                      <p className="font-medium text-gray-800">
+                        {entry.location}
+                      </p>
+                    </div>
+                  )}
+                  {entry.company_name && (
+                    <div>
+                      <p className="text-gray-400 mb-0.5">Company</p>
+                      <p className="font-medium text-gray-800">
+                        {entry.company_name}
+                      </p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-gray-400 mb-0.5">Registered</p>
+                    <p className="font-medium text-gray-800">
+                      {registeredDate}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-gray-100">
@@ -202,7 +297,9 @@ export default function WaitlistTable({
           </tbody>
         </table>
       </div>
-      <div className="p-4 flex items-center justify-between">
+
+      {/* Pagination */}
+      <div className="p-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-t border-gray-100">
         <p className="text-xs text-gray-500">
           Showing {start} to {end} of {total} registrations
         </p>
