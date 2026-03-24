@@ -30,6 +30,13 @@ export default function Waitlist() {
   const handleVideoCanPlayThrough = () => {
     videoReadyRef.current = true;
     checkReadiness();
+
+    // Force play on mobile
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {
+        // Silently fail if autoplay is blocked
+      });
+    }
   };
 
   useEffect(() => {
@@ -82,9 +89,7 @@ export default function Waitlist() {
 
   return (
     <>
-      {!preloaderDone && (
-        <Preloader onComplete={handlePreloaderComplete} />
-      )}
+      {!preloaderDone && <Preloader onComplete={handlePreloaderComplete} />}
 
       <div className="">
         {/* Background Audio */}
@@ -97,6 +102,7 @@ export default function Waitlist() {
           muted
           loop
           playsInline
+          disablePictureInPicture
           preload="auto"
           poster="/img/poster.webp"
           onCanPlayThrough={handleVideoCanPlayThrough}
