@@ -273,11 +273,11 @@ const WaitListForm = () => {
       });
       (e.target as HTMLFormElement).reset();
     } catch (error: any) {
-      const errorMessage = 
+      const errorMessage =
         error?.response?.data?.message ||
         error?.message ||
         "Something went wrong. Please try again.";
-      
+
       setResult({
         success: false,
         message: errorMessage,

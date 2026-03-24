@@ -37,14 +37,14 @@ export default function Hero() {
             <span ref={typedRef} className="text-primary font-body"></span>
           </h1>
 
-          <p className="hero-description md:mt-0 mt-10 text-white/75 text-[18px] max-w-130 leading-relaxed mb-4">
+          <p className="hero-description md:mt-0 mt-4 text-white/75 text-[18px] max-w-130 leading-relaxed mb-4">
             We're onboarding a limited number of agents, giving you early
             visibility, priority listing placement, and exclusive perks.
           </p>
 
-          <div style={{ marginTop: "50px" }}>
+          <div style={{ marginTop: "30px" }}>
             <Link to={"/waitlist-form"} className="hero-btn">
-              Join Our Network
+              Join Our Marketplace
               <ArrowRight className="arrow" size={18} />
             </Link>
           </div>

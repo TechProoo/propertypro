@@ -76,6 +76,25 @@ const waitlistService = {
     });
     return data;
   },
+
+  /**
+   * Send email to a waitlist entry
+   */
+  sendEmail: async (
+    id: string,
+    payload: {
+      to: string;
+      subject: string;
+      text: string;
+      html?: string;
+    }
+  ): Promise<{ success: boolean; message: string }> => {
+    const { data } = await apiClient.post<{ success: boolean; message: string }>(
+      `/waitlist/${id}/send-email`,
+      payload
+    );
+    return data;
+  },
 };
 
 export default waitlistService;

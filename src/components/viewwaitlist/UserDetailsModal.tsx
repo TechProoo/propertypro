@@ -1,6 +1,7 @@
 import { X, Mail, Phone, MapPin, Building2, Calendar } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import waitlistService from "@/api/services/waitlistService";
 
 export interface WaitlistEntry {
   id: string;
@@ -52,6 +53,28 @@ export default function UserDetailsModal({
 
   const backdropRef = useRef<HTMLDivElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+  const emailFormRef = useRef<HTMLDivElement>(null);
+
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [emailMessage, setEmailMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [emailSubject, setEmailSubject] = useState("PropertyLoop Update");
+  const [emailBody, setEmailBody] = useState("");
+
+  // Auto-scroll to email form when it opens
+  useEffect(() => {
+    if (showEmailForm && emailFormRef.current) {
+      setTimeout(() => {
+        emailFormRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+      }, 100);
+    }
+  }, [showEmailForm]);
 
   useEffect(() => {
     if (!entry) return;
@@ -61,20 +84,19 @@ export default function UserDetailsModal({
       gsap.fromTo(
         backdropRef.current,
         { opacity: 0 },
-        { opacity: 1, duration: 0.3, ease: "power2.out" }
+        { opacity: 1, duration: 0.3, ease: "power2.out" },
       );
 
       // Modal scale and fade in
       gsap.fromTo(
         modalRef.current,
         { scale: 0.95, opacity: 0, y: 20 },
-        { scale: 1, opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.2)" }
+        { scale: 1, opacity: 1, y: 0, duration: 0.4, ease: "back.out(1.2)" },
       );
 
       // Stagger content sections
-      const contentSections = modalRef.current?.querySelectorAll(
-        ".content-section"
-      );
+      const contentSections =
+        modalRef.current?.querySelectorAll(".content-section");
       if (contentSections) {
         gsap.fromTo(
           contentSections,
@@ -86,7 +108,7 @@ export default function UserDetailsModal({
             stagger: 0.08,
             ease: "power2.out",
             delay: 0.15,
-          }
+          },
         );
       }
     });
@@ -105,6 +127,166 @@ export default function UserDetailsModal({
       year: "numeric",
     },
   );
+
+  const handleSendEmail = async () => {
+    if (!emailSubject.trim() || !emailBody.trim()) {
+      setEmailMessage({
+        type: "error",
+        text: "Subject and message are required.",
+      });
+      return;
+    }
+
+    setEmailLoading(true);
+    setEmailMessage(null);
+
+    try {
+      const htmlTemplate = `
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>${emailSubject}</title>
+            <style>
+              * { margin: 0; padding: 0; box-sizing: border-box; }
+              body { 
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background-color: #f5f5f5;
+                color: #333;
+                line-height: 1.6;
+              }
+              .wrapper { background-color: #f5f5f5; padding: 20px 0; }
+              .container { 
+                max-width: 600px; 
+                margin: 0 auto; 
+                background-color: #ffffff;
+                border-radius: 8px;
+                overflow: hidden;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+              }
+              .header { 
+                background: linear-gradient(135deg, #2f9e61 0%, #247a4a 100%);
+                color: white; 
+                padding: 30px 20px;
+                text-align: center;
+                border-bottom: 4px solid #1f5a37;
+              }
+              .header svg {
+                max-width: 80px;
+                height: auto;
+                margin-bottom: 10px;
+              }
+              .header h2 {
+                font-size: 24px;
+                font-weight: 600;
+                margin: 0;
+              }
+              .content { 
+                padding: 40px;
+              }
+              .message-body {
+                font-size: 15px;
+                color: #555;
+                line-height: 1.8;
+                white-space: pre-wrap;
+                word-wrap: break-word;
+              }
+              .message-container {
+                background-color: #f9fafb;
+                border-left: 4px solid #2f9e61;
+                padding: 20px;
+                margin: 20px 0;
+                border-radius: 4px;
+              }
+              .footer {
+                background-color: #f9fafb;
+                padding: 20px;
+                text-align: center;
+                font-size: 12px;
+                color: #999;
+                border-top: 1px solid #eee;
+              }
+              .footer a {
+                color: #2f9e61;
+                text-decoration: none;
+              }
+              .footer p {
+                margin: 5px 0;
+              }
+              .divider {
+                height: 1px;
+                background-color: #eee;
+                margin: 20px 0;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="wrapper">
+              <div class="container">
+                <!-- Header -->
+                <div class="header">
+                  <svg width="80" height="80" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="60" cy="60" r="58" fill="white" opacity="0.1" stroke="white" stroke-width="2"/>
+                    <path d="M60 30L80 50V85H40V50L60 30Z" fill="white"/>
+                    <path d="M50 60L60 50L70 60" stroke="white" stroke-width="2" fill="none"/>
+                  </svg>
+                  <h2>PropertyLoop</h2>
+                </div>
+
+                <!-- Main Content -->
+                <div class="content">
+                  <div class="message-container">
+                    <div class="message-body">${emailBody}</div>
+                  </div>
+                  
+                  <div class="divider"></div>
+                  
+                  <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                    If you have any questions or need further assistance, feel free to reach out. We're here to help!
+                  </p>
+                </div>
+
+                <!-- Footer -->
+                <div class="footer">
+                  <p><strong style="color: #2f9e61;">PropertyLoop Team</strong></p>
+                  <p>Making real estate management smarter</p>
+                  <p style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
+                    <a href="https://propertyloop.ng">Visit our website</a> • 
+                    <a href="https://propertyloop.ng/privacy">Privacy Policy</a>
+                  </p>
+                  <p>&copy; 2026 PropertyLoop. All rights reserved.</p>
+                </div>
+              </div>
+            </div>
+          </body>
+        </html>
+      `;
+
+      await waitlistService.sendEmail(entry.id, {
+        to: entry.email,
+        subject: emailSubject,
+        text: emailBody,
+        html: htmlTemplate,
+      });
+
+      setEmailMessage({
+        type: "success",
+        text: "Email sent successfully!",
+      });
+      setShowEmailForm(false);
+      setEmailSubject("PropertyLoop Update");
+      setEmailBody("");
+    } catch (error) {
+      setEmailMessage({
+        type: "error",
+        text: "Failed to send email. Please try again.",
+      });
+      console.error("Email send error:", error);
+    } finally {
+      setEmailLoading(false);
+    }
+  };
 
   return (
     <>
@@ -241,10 +423,81 @@ export default function UserDetailsModal({
               >
                 Close
               </button>
-              <button className="flex-1 px-4 py-2.5 rounded-lg bg-[#2f9e61] text-white text-sm font-semibold hover:bg-[#2f9e61]/90 transition-colors">
+              <button
+                onClick={() => setShowEmailForm(true)}
+                className="flex-1 px-4 py-2.5 rounded-lg bg-[#2f9e61] text-white text-sm font-semibold hover:bg-[#2f9e61]/90 transition-colors"
+              >
                 Send Email
               </button>
             </div>
+
+            {/* Email Compose Form */}
+            {showEmailForm && (
+              <div
+                ref={emailFormRef}
+                className="content-section bg-blue-50 rounded-lg p-4 border border-blue-200 space-y-4"
+              >
+                <div>
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    value={emailSubject}
+                    onChange={(e) => setEmailSubject(e.target.value)}
+                    placeholder="Email subject"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#2f9e61]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-800 mb-2">
+                    Message
+                  </label>
+                  <textarea
+                    value={emailBody}
+                    onChange={(e) => setEmailBody(e.target.value)}
+                    placeholder="Compose your message here..."
+                    rows={6}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#2f9e61] resize-none"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {emailBody.length} characters
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      setShowEmailForm(false);
+                      setEmailMessage(null);
+                    }}
+                    className="flex-1 px-3 py-2 rounded-lg border border-gray-200 text-gray-700 text-sm font-semibold hover:bg-gray-50 transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSendEmail}
+                    disabled={emailLoading}
+                    className="flex-1 px-3 py-2 rounded-lg bg-[#2f9e61] text-white text-sm font-semibold hover:bg-[#2f9e61]/90 disabled:opacity-60 disabled:cursor-not-allowed transition-opacity"
+                  >
+                    {emailLoading ? "Sending..." : "Send"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {emailMessage && (
+              <div
+                className={`p-3 rounded-lg text-sm font-medium ${
+                  emailMessage.type === "success"
+                    ? "bg-green-50 text-green-800 border border-green-200"
+                    : "bg-red-50 text-red-800 border border-red-200"
+                }`}
+              >
+                {emailMessage.text}
+              </div>
+            )}
           </div>
         </div>
       </div>
