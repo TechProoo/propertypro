@@ -40,12 +40,17 @@ export default function Waitlist() {
       events.forEach((e) => document.removeEventListener(e, play));
     };
     // Try autoplay first
-    audio.play().then(() => {
-      audio.currentTime = START_TIME;
-    }).catch(() => {
-      // Browser blocked it — wait for any user interaction
-      events.forEach((e) => document.addEventListener(e, play, { once: true }));
-    });
+    audio
+      .play()
+      .then(() => {
+        audio.currentTime = START_TIME;
+      })
+      .catch(() => {
+        // Browser blocked it — wait for any user interaction
+        events.forEach((e) =>
+          document.addEventListener(e, play, { once: true }),
+        );
+      });
     return () => {
       events.forEach((e) => document.removeEventListener(e, play));
       audio.removeEventListener("ended", onEnded);
@@ -55,40 +60,42 @@ export default function Waitlist() {
 
   return (
     <>
-      {!preloaderDone && <Preloader onComplete={() => setPreloaderDone(true)} />}
+      {!preloaderDone && (
+        <Preloader onComplete={() => setPreloaderDone(true)} />
+      )}
 
       <div className="">
-      {/* Background Audio */}
-      <audio ref={audioRef} src={bgAudio} />
+        {/* Background Audio */}
+        <audio ref={audioRef} src={bgAudio} />
 
-      {/* Background Video */}
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        poster="/img/poster.webp"
-        className="fixed top-0 left-0 w-full h-full object-cover -z-10 pointer-events-none"
-      >
-        <source src="/img/127983 (Original).mp4" type="video/mp4" />
-      </video>
+        {/* Background Video */}
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster="/img/poster.webp"
+          className="fixed top-0 left-0 w-full h-full object-cover -z-10 pointer-events-none"
+        >
+          <source src="/img/127983 (Original).mp4" type="video/mp4" />
+        </video>
 
-      {/* Dark overlay over video */}
-      <div className="fixed inset-0 bg-primary-dark/50 -z-5"></div>
+        {/* Dark overlay over video */}
+        <div className="fixed inset-0 bg-primary-dark/70 -z-5"></div>
 
-      {/* Content */}
-      <div className="text-white overflow-y-hidden">
-        <Navbar />
-        <Hero />
+        {/* Content */}
+        <div className="text-white overflow-y-hidden">
+          <Navbar />
+          <Hero />
+        </div>
+
+        {/* Social Icons */}
+        <SocialIcons />
+
+        {/* Audio Toggle */}
+        <AudioToggle audioRef={audioRef} />
       </div>
-
-      {/* Social Icons */}
-      <SocialIcons />
-
-      {/* Audio Toggle */}
-      <AudioToggle audioRef={audioRef} />
-    </div>
     </>
   );
 }
