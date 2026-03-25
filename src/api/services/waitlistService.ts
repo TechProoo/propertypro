@@ -91,7 +91,8 @@ const waitlistService = {
   ): Promise<{ success: boolean; message: string }> => {
     const { data } = await apiClient.post<{ success: boolean; message: string }>(
       `/waitlist/${id}/send-email`,
-      payload
+      payload,
+      { timeout: 30000 }
     );
     return data;
   },
