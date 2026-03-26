@@ -35,7 +35,7 @@ export default function AudioToggle({ audioRef }: AudioToggleProps) {
     gsap.fromTo(
       btnRef.current,
       { scale: 0, opacity: 0, rotate: -180 },
-      { scale: 1, opacity: 1, rotate: 0, duration: 0.6, ease: "back.out(1.7)" }
+      { scale: 1, opacity: 1, rotate: 0, duration: 0.6, ease: "back.out(1.7)" },
     );
   }, []);
 
@@ -76,7 +76,7 @@ export default function AudioToggle({ audioRef }: AudioToggleProps) {
     gsap.fromTo(
       btnRef.current,
       { scale: 0.85 },
-      { scale: 1, duration: 0.4, ease: "elastic.out(1, 0.4)" }
+      { scale: 1, duration: 0.4, ease: "elastic.out(1, 0.4)" },
     );
 
     if (audio.paused) {
