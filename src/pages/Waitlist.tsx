@@ -43,6 +43,7 @@ export default function Waitlist() {
     const audio = audioRef.current;
     if (!audio) return;
     const START_TIME = 14;
+    const tryPlay = () => audio.play().catch(() => undefined);
     audio.volume = 0.75;
     audio.preload = "metadata";
 
@@ -58,14 +59,14 @@ export default function Waitlist() {
     // Loop back to start time when the track ends
     const onEnded = () => {
       audio.currentTime = START_TIME;
-      audio.play();
+      void tryPlay();
     };
     audio.addEventListener("ended", onEnded);
 
     const events = ["click", "scroll", "keydown", "touchstart"] as const;
     const play = () => {
       audio.currentTime = START_TIME;
-      audio.play();
+      void tryPlay();
       events.forEach((e) => document.removeEventListener(e, play));
     };
     // Try autoplay first

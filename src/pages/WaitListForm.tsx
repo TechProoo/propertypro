@@ -388,17 +388,40 @@ const WaitListForm = () => {
                   >
                     {submitting ? "Submitting..." : "Join Waitlist"}
                   </button>
-                  {result && (
-                    <p
-                      className={`mt-3 text-sm text-center ${result.success ? "text-white" : "text-red-300"}`}
-                    >
-                      {result.message}
-                    </p>
-                  )}
                 </div>
               </div>
             </form>
           </div>
+          {result && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+              <div
+                className={`mx-4 max-w-sm w-full rounded-2xl p-6 shadow-2xl text-center animate-[popIn_0.3s_ease-out] ${
+                  result.success
+                    ? "bg-white text-[#4a7a5c]"
+                    : "bg-red-50 text-red-700"
+                }`}
+              >
+                <div className="text-4xl mb-3">
+                  {result.success ? "✓" : "✗"}
+                </div>
+                <p className="text-base font-semibold mb-1">
+                  {result.success ? "Success!" : "Error"}
+                </p>
+                <p className="text-sm opacity-80">{result.message}</p>
+                <button
+                  type="button"
+                  onClick={() => setResult(null)}
+                  className={`mt-4 px-6 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    result.success
+                      ? "bg-[#4a7a5c] text-white hover:bg-[#3d6a4e]"
+                      : "bg-red-600 text-white hover:bg-red-700"
+                  }`}
+                >
+                  OK
+                </button>
+              </div>
+            </div>
+          )}
           <p className="text-black/50 text-xs text-center mb-3">
             &copy; 2026 PropertyLoop.ng. All Rights Reserved.
           </p>

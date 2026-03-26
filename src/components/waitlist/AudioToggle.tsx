@@ -80,7 +80,7 @@ export default function AudioToggle({ audioRef }: AudioToggleProps) {
     );
 
     if (audio.paused) {
-      audio.play();
+      void audio.play().catch(() => undefined);
     } else {
       audio.pause();
     }
