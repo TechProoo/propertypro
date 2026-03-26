@@ -315,8 +315,10 @@ const WaitListForm = () => {
                   {icons.map((item) => (
                     <a
                       key={item.label}
-                      href="#"
+                      href={item.href}
                       aria-label={item.label}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="w-10 h-10 flex items-center justify-center rounded-(--radius-full) bg-[#2f9e61] text-white transition-all duration-150
                             hover:bg-transparent hover:border-2 hover:border-primary/15 hover:text-primary"
                     >

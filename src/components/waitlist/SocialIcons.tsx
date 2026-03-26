@@ -1,9 +1,13 @@
 import { MessageCircle, Mail } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
-export const icons: { Icon: LucideIcon; label: string }[] = [
-  { Icon: MessageCircle, label: "WhatsApp" },
-  { Icon: Mail, label: "Email" },
+export const icons: { Icon: LucideIcon; label: string; href: string }[] = [
+  {
+    Icon: MessageCircle,
+    label: "WhatsApp",
+    href: "https://wa.me/2347053053040",
+  },
+  { Icon: Mail, label: "Email", href: "#" },
 ];
 
 export default function SocialIcons() {
@@ -13,8 +17,10 @@ export default function SocialIcons() {
         {icons.map((item) => (
           <a
             key={item.label}
-            href="#"
+            href={item.href}
             aria-label={item.label}
+            target="_blank"
+            rel="noopener noreferrer"
             className="w-12.5 h-12.5 flex items-center justify-center rounded-(--radius-full) bg-primary/15 text-white transition-all duration-150
               hover:bg-transparent hover:border-2 hover:border-primary/15 hover:text-primary"
           >
