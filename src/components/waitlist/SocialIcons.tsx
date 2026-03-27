@@ -7,7 +7,7 @@ export const icons: { Icon: LucideIcon; label: string; href: string }[] = [
     label: "WhatsApp",
     href: "https://wa.me/2347053053040",
   },
-  { Icon: Mail, label: "Email", href: "#" },
+  { Icon: Mail, label: "Email", href: "mailto:support@propertyloop.ng" },
 ];
 
 export default function SocialIcons() {
