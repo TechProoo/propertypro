@@ -75,6 +75,18 @@ const tabFields: Record<
       placeholder: "Enter Your Last Name",
     },
     {
+      label: "Company Name",
+      name: "company_name",
+      type: "text",
+      placeholder: "Enter Your Company Name",
+    },
+    {
+      label: "Location",
+      name: "location",
+      type: "text",
+      placeholder: "Enter Your Location",
+    },
+    {
       label: "Phone Number",
       name: "phone",
       type: "tel",
