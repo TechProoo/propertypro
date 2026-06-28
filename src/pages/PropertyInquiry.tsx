@@ -14,7 +14,10 @@ import type { FeaturedProperty } from "../api/services/featuredPropertiesService
 
 const WHATSAPP = "2347053053040";
 const PHONE = "2347053053040";
-const SUPPORT_EMAIL = "support@propertyloop.ng";
+// Public-facing label uses the friendly address; messages route to the
+// actual mailbox alias behind the scenes.
+const SUPPORT_EMAIL_DISPLAY = "support@propertyloop.ng";
+const SUPPORT_EMAIL_TARGET = "support.propertyloop@propertyloop.ng";
 
 function ContactCard({
   icon,
@@ -184,9 +187,9 @@ export default function PropertyInquiry() {
             icon={<Phone size={22} />}
           />
           <ContactCard
-            href={`mailto:${SUPPORT_EMAIL}?subject=${emailSubject}`}
+            href={`mailto:${SUPPORT_EMAIL_TARGET}?subject=${emailSubject}`}
             label="Email"
-            value={SUPPORT_EMAIL}
+            value={SUPPORT_EMAIL_DISPLAY}
             color="bg-purple-500/20 text-purple-400"
             bg="border-purple-800/30 bg-purple-900/10 hover:border-purple-600/50"
             icon={<Mail size={22} />}
@@ -230,11 +233,11 @@ export default function PropertyInquiry() {
           </div>
 
           <a
-            href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent("I want to feature my property on PropertyLoop")}`}
+            href={`mailto:${SUPPORT_EMAIL_TARGET}?subject=${encodeURIComponent("I want to feature my property on PropertyLoop")}`}
             className="inline-flex items-center gap-2 px-6 py-3 bg-[#2f9e61] hover:bg-[#26834f] text-white font-bold rounded-full transition-all duration-200 hover:shadow-lg hover:shadow-[#2f9e61]/25 hover:-translate-y-0.5 text-sm"
           >
             <Mail size={16} />
-            Email {SUPPORT_EMAIL}
+            Email {SUPPORT_EMAIL_DISPLAY}
           </a>
         </div>
 
