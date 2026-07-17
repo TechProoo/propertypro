@@ -1,4 +1,1 @@
-# waitlist.propertyloop.ng has been retired — the platform is live at
-# www.propertyloop.ng. Permanently redirect every URL to the main domain so
-# search engines transfer ranking authority and any old links keep working.
-/*    https://www.propertyloop.ng/   301!
+/*    /index.html   200
