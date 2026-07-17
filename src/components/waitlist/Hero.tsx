@@ -2,9 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import Typed from "typed.js";
 import { ArrowRight, Bed, Bath, MapPin, ChevronRight } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import featuredPropertiesService, {
-  FeaturedProperty,
-} from "../../api/services/featuredPropertiesService";
+import featuredPropertiesService from "../../api/services/featuredPropertiesService";
+import type { FeaturedProperty } from "../../api/services/featuredPropertiesService";
 
 export default function Hero() {
   const typedRef = useRef<HTMLSpanElement>(null);
